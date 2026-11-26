@@ -80,7 +80,9 @@ class Repro19872_SoundSplitOnSecureScreen(unittest.TestCase):
 			mock.patch.object(soundSplit, "_activeCallback", None),
 			mock.patch.dict(soundSplit._applicationExitCallbacks, clear=True),
 			mock.patch.object(
-				soundSplit.AudioUtilities, "GetAudioSessionManager", return_value=mock.MagicMock()
+				soundSplit.AudioUtilities,
+				"GetAudioSessionManager",
+				return_value=mock.MagicMock(),
 			),
 		):
 			patcher.start()
@@ -97,7 +99,9 @@ class Repro19872_SoundSplitOnSecureScreen(unittest.TestCase):
 
 	def patchSessions(self, *sessions: _FakeAudioSession) -> None:
 		patcher = mock.patch.object(
-			self.soundSplit.AudioUtilities, "GetAllSessions", return_value=list(sessions)
+			self.soundSplit.AudioUtilities,
+			"GetAllSessions",
+			return_value=list(sessions),
 		)
 		patcher.start()
 		self.addCleanup(patcher.stop)
