@@ -114,6 +114,8 @@ class Repro19872_SoundSplitOnSecureScreen(unittest.TestCase):
 		self.patchSecureScreen(True)
 		appSession = _FakeAudioSession(self.APP_PID)
 		self.patchSessions(appSession)
+		# Before the fix, the secure screen copy of NVDA initialized sound split at startup.
+		self.soundSplit._audioSessionManager = mock.MagicMock()
 
 		audio._setSoundSplitState(audio.SoundSplitState.NVDA_LEFT_APPS_RIGHT)
 
@@ -125,6 +127,8 @@ class Repro19872_SoundSplitOnSecureScreen(unittest.TestCase):
 		appSession = _FakeAudioSession(self.APP_PID)
 		self.patchSessions(appSession)
 		config.conf["audio"]["soundSplitState"] = audio.SoundSplitState.OFF.value
+		# Before the fix, the secure screen copy of NVDA initialized sound split at startup.
+		self.soundSplit._audioSessionManager = mock.MagicMock()
 
 		with mock.patch("ui.message"):
 			audio._toggleSoundSplitState()
@@ -243,10 +247,11 @@ class Repro19560_UpdateCheckStatePickle(unittest.TestCase):
 	def test_postponedUpdateSurvivesRestart(self):
 		"""Control for the new format: a postponed update is still offered after restarting NVDA."""
 		os.remove(self.picklePath)
+		updateCheck.initialize()
+		# The update is downloaded and postponed after NVDA has started.
 		pendingFile = os.path.join(self.updatesDir, "nvda_update.exe")
 		with open(pendingFile, "wb"):
 			pass
-		updateCheck.initialize()
 		updateCheck.state["pendingUpdateFile"] = pendingFile
 		updateCheck.state["pendingUpdateVersion"] = "2099.1"
 		updateCheck.state["pendingUpdateAPIVersion"] = (2099, 1, 0)
